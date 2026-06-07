@@ -20,6 +20,7 @@ contract TestStakingApp is Test {
 
     // StakingApp Parameters
     address owner = vm.addr(1);
+    address randomUser = vm.addr(2);
     uint256 stakingPeriod = 86400;
     uint256 fixedStakingAmount = 10;
     uint256 rewardPerPeriod = 1 ether;
@@ -35,5 +36,33 @@ contract TestStakingApp is Test {
 
     function testStakingAppDeployed() external view {
         assert(address(stakingApp) != address(0));
+    }
+
+    function testShouldRevertIfNotOwner() external {
+        
+        uint256 newStakingPeriod_ = 12345;
+
+        vm.expectRevert();
+        stakingApp.updateStakingPeriod(newStakingPeriod_);
+    }
+
+    function testShouldUpdateStakingPeriod() external {
+        vm.startPrank(owner);
+        uint256 newStakingPeriod_ = 12345;
+
+        uint256 stakingPeriodBefore = stakingApp.stakingPeriod();
+        stakingApp.updateStakingPeriod(newStakingPeriod_);
+        uint256 stakingPeriodAfter = stakingApp.stakingPeriod();
+
+        assert(stakingPeriodBefore != stakingPeriodAfter);
+        assert(stakingPeriodAfter == newStakingPeriod_);
+        vm.stopPrank();
+    }
+
+    function testContractCanReceiveEther() external {
+
+        uint256 etherValue = 1 ether;
+        (bool success,) = address(stakingApp).call{value: etherValue}("");
+        require(success);
     }
 }
