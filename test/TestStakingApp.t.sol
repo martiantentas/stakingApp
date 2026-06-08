@@ -60,9 +60,17 @@ contract TestStakingApp is Test {
     }
 
     function testContractCanReceiveEther() external {
+        vm.startPrank(owner);
+        vm.deal(owner, 1 ether);
 
         uint256 etherValue = 1 ether;
+        uint256 balanceBefore = address(stakingApp).balance;
         (bool success,) = address(stakingApp).call{value: etherValue}("");
-        require(success);
+        uint256 balanceAfter = address(stakingApp).balance;
+        require(success, "Transfer failed.");
+
+        assert(balanceAfter == balanceBefore + etherValue);
+
+        vm.stopPrank();
     }
 }
