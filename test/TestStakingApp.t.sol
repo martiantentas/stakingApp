@@ -78,7 +78,7 @@ contract TestStakingApp is Test {
         vm.startPrank(randomUser);
 
         uint256 amount_ = 1;
-        vm.expectRevert("Incorrect Amount");
+        vm.expectRevert("Wrong amount");
         stakingApp.depositTokens(amount_);
 
         vm.stopPrank();
@@ -121,6 +121,11 @@ contract TestStakingApp is Test {
         assert(userBalanceAfter == tokenAmount + userBalanceBefore);
         assert(elapsePeriodBefore == 0);
         assert(elapsePeriodAfter == block.timestamp);
+
+        stakingToken.mint(tokenAmount);
+        IERC20(stakingToken).approve(address(stakingApp), tokenAmount);
+        vm.expectRevert("Already Deposited Tokens");
+        stakingApp.depositTokens(tokenAmount);
 
         vm.stopPrank();
     }
