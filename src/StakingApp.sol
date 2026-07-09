@@ -24,7 +24,7 @@ contract StakingApp is Ownable {
     event WithdrawTokens(address userAddress_, uint256 withdrawAmount_);
     event EtherSent(uint256 amount_);
 
-    // Constructor
+    // Constructor: initialize both constructors (current smart contract, and inherited smart contract -> ownable)
     constructor(address stakingToken_, address owner_, uint256 stakingPeriod_, uint256 fixedStakingAmount_, uint256 rewardPerPeriod_) Ownable(owner_) {
         stakingToken = stakingToken_;
         stakingPeriod = stakingPeriod_;
@@ -33,6 +33,9 @@ contract StakingApp is Ownable {
     }
 
     // Functions
+    function elapsedPeriod(address user_) public view returns (uint256) {
+    return block.timestamp - depositTimestamp[user_];
+    }
 
     // External
 
